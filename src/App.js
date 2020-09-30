@@ -246,6 +246,7 @@ class App extends Component {
   onLayoutChange(layout) {
     console.log("onLayoutChangeonLayoutChangeonLayoutChange", layout);
     this.props.onLayoutChange(layout);
+    
   }
 
   // Normally you would want to split things out into separate components.
@@ -257,10 +258,12 @@ class App extends Component {
       <DragDropContext onDragEnd={this.onDragEnd}>
         <Droppable droppableId="ITEMS" isDropDisabled={true}>
           {(provided, snapshot) => (
+            
             <Kiosk
               ref={provided.innerRef}
               className="kioskkkkkkkk"
               isDraggingOver={snapshot.isDraggingOver}
+              
             >
               {ITEMS.map((item, index) => (
                 <Draggable key={item.id} draggableId={item.id} index={index}>
@@ -273,8 +276,10 @@ class App extends Component {
                         {...provided.dragHandleProps}
                         isDragging={snapshot.isDragging}
                         style={provided.draggableProps.style}
+
                       >
                         {item.content}
+                        
                       </Item>
                       {snapshot.isDragging && (
                         <Clone className="clone">{item.content}</Clone>
@@ -306,7 +311,7 @@ class App extends Component {
                 >
                   <ReactGridLayout
                     key={"gridlayout"}
-                    isResizable={false}
+                    isResizable={true}
                     style={{ overflow: "auto" }}
                     onLayoutChange={this.onLayoutChange.bind(this)}
                     // preventCollision
@@ -314,7 +319,6 @@ class App extends Component {
                   >
                     {this.state[list].length ? (
                       this.state[list].map((item, index) => (
-                        
                         <ItemDropped
                           key={"item" + index}
                           data-grid={{
@@ -323,8 +327,12 @@ class App extends Component {
                             w: item.w,
                             h: item.h
                           }}
+                          
                         >
                           {item.content}
+                          {/* {this.state(cancel(index))} */}
+                          {console.log({...this.props})}
+                        
                         </ItemDropped>
                         
                       ))
