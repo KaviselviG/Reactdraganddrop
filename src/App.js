@@ -7,6 +7,8 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import RGL, { WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import { Line } from 'react-lineto';
+import LineTo from 'react-lineto';
 
 import { Resizable, ResizableBox } from 'react-resizable';
 
@@ -25,9 +27,12 @@ const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
-
+console.log(result);
   return result;
 };
+
+let filterLists;
+
 
 /**
  * Moves an item from one list to another list.
@@ -80,6 +85,22 @@ const Item = styled.div`
 `;
 
 const ItemDropped = styled(Item)`
+  line-height: calc(75%);
+  @media (max-width: 768px) {
+    font-size: 8px;
+    text-align: left;
+  }
+`;
+
+const removeBtn = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: red;
+`;
+
+
+const ItemBtn = styled(removeBtn)`
   line-height: calc(75%);
   @media (max-width: 768px) {
     font-size: 8px;
@@ -147,9 +168,9 @@ const Button = styled.button`
   justify-content: center;
   margin: 0.5rem;
   padding: 0.5rem;
-  color: #000;
+  color: #fff;
   border: 1px solid #ddd;
-  background: #fff;
+  background: #6b6e70;
   border-radius: 3px;
   font-size: 1rem;
   cursor: pointer;
@@ -158,6 +179,9 @@ const Button = styled.button`
 const ButtonText = styled.div`
   margin: 0 1rem;
 `;
+
+//let filetrList = [];
+
 
 const ITEMS = [
   {
@@ -188,21 +212,29 @@ const ITEMS = [
 
 class App extends Component {
   state = {
-    [uuid()]: []
+    [uuid()]: [],
+    filterList : []
   };
   static defaultProps = {
     className: "layout",
     // items: 20,
-    rowHeight: 600,
+    rowHeight: 130,
     onLayoutChange: function() {},
     cols: 12,
     
   };
   onDragEnd = result => {
-    const { source, destination } = result;
+    const { source, destination, reason } = result;
 
     // dropped outside the list
     if (!destination) {
+      return;
+    }
+
+    if (!destination || reason === 'CANCEL') {
+      this.setState({
+        draggingRowId: null,
+      });
       return;
     }
 
@@ -240,14 +272,65 @@ class App extends Component {
   };
 
   addList = e => {
-    this.setState({ [uuid()]: [] });
+    this.setState({ uid : [] });
+    console.log(this.state);
   };
+
+  saveComponent = e => {
+    console.log(this.state);
+  }
+
+  clearallComponent = e => {
+    this.setState([]);
+  }
 
   onLayoutChange(layout) {
     console.log("onLayoutChangeonLayoutChangeonLayoutChange", layout);
     this.props.onLayoutChange(layout);
     
   }
+  
+  handleRemove = (item) => {
+    let id = item.id;
+    console.log(id);
+    const idconst = this.state;
+    //console.log(idconst);
+    const idKey = Object.keys(idconst)[0];
+    let completeArrList = idconst[idKey];
+    this.setState({filterList:item});
+    //console.log(this.state.filterList.length);
+    // get index of object with id
+    let componentArrList = idconst.filterList;
+    console.log(componentArrList);
+
+    //[uuid()]
+    //let gid = idconst[idKey];
+    //console.log(gid.id);
+    //componentArrList.map((item)=>item.filter((i) => i.id !== gid.id));
+    let removeIndex = completeArrList.map(function(item, index) { return item.id; }).indexOf(id);
+    // remove object
+    console.log(removeIndex);
+    completeArrList.splice(removeIndex, 1);
+    
+    //let componentArrList = idconst[idKey];
+    //console.log(componentArrList);
+    //let gid = idconst[idKey];
+    //console.log(gid.id);
+    //componentArrList.map((item)=>item.filter((i) => i.id !== gid.id));
+    // filterLists = componentArrList.filter((i) => i.id !== gid.id);
+    // console.log(filterLists.length);
+    // this.setState({filterList:filterLists});
+    
+    //idconst.map((i)=>console.log(i.id));
+    //.filter((item) => item.id !== uuid());
+    
+    //console.log(this.setState([uuid()]: [] }));
+    //const newList = this.state([]).filter((item) => item.id !== uuid());
+    //this.setState({ [uuid()]: newList });
+      //this.setState({ [source.droppableId] : newList });
+  };
+
+  
 
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
@@ -292,6 +375,7 @@ class App extends Component {
           )}
         </Droppable>
         
+        
         <Content className="content DashPreview-PreviewList">
           {/* <Button onClick={this.addList}>
             <svg width="24" height="24" viewBox="0 0 24 24">
@@ -302,12 +386,24 @@ class App extends Component {
             </svg>
             <ButtonText>Add List</ButtonText>
           </Button> */}
+
+          <Button onClick={this.saveComponent} style={{display:'inline'}}>
+            
+            <ButtonText>Save</ButtonText>
+          </Button>
+
+          <Button style={{display:'inline'}} onClick={this.clearallComponent}>
+            
+            <ButtonText>Clear All</ButtonText>
+          </Button>
+     
           {Object.keys(this.state).map((list, i) => (
             <Droppable key={list} droppableId={list}>
               {(provided, snapshot) => (
                 <Container
                   ref={provided.innerRef}
                   isDraggingOver={snapshot.isDraggingOver}
+                  
                 >
                   <ReactGridLayout
                     key={"gridlayout"}
@@ -317,6 +413,7 @@ class App extends Component {
                     // preventCollision
                     {...this.props}
                   >
+                    
                     {this.state[list].length ? (
                       this.state[list].map((item, index) => (
                         <ItemDropped
@@ -330,9 +427,14 @@ class App extends Component {
                           
                         >
                           {item.content}
-                          {/* {this.state(cancel(index))} */}
-                          {console.log({...this.props})}
-                        
+                          <ItemBtn>
+                          <Button className='removeBtn' key={'remove'} onClick={() => this.handleRemove(item)}>
+            
+                            <ButtonText>x</ButtonText>
+                          </Button>
+                          </ItemBtn>
+                          {/* <LineTo from={index} to={index} /> */}
+                          {/* <Line x0={120} y0={20} x1={item.w} y1={item.h} /> */}
                         </ItemDropped>
                         
                       ))
