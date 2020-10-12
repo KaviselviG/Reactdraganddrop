@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import RGL, { WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
+// import "react-resizable/css/styles.css";
 import { Line } from 'react-lineto';
 import LineTo from 'react-lineto';
 
@@ -19,6 +19,8 @@ import NavTwo from './NavTwo';
 import NavThree from './NavThree';
 import NavFour from './NavFour';
 import NavFive from './NavFive';
+import StraightLine from './StraightLine';
+import VerticalLine from './VerticalLine';
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -40,10 +42,10 @@ let filterLists;
 const copy = (source, destination, droppableSource, droppableDestination) => {
   const sourceClone = Array.from(source);
   sourceClone.forEach((item, index) => {
-    item.w = 2;
+    item.w = 3;
     item.h = 1;
-    item.x = 0;
-    item.y = 0;
+    item.x = 1;
+    item.y = 1;
     item.i = index;
   });
   const destClone = Array.from(destination);
@@ -99,6 +101,17 @@ const removeBtn = styled.div`
   color: red;
 `;
 
+const drawLines = styled.div`
+position: absolute;
+border: 0px;
+overflow: hidden;
+width: 143px;
+height: 32px;
+`;
+
+const ItemLineDropped = styled(drawLines)`
+line-height: 0px;
+`;
 
 const ItemBtn = styled(removeBtn)`
   line-height: calc(75%);
@@ -142,7 +155,7 @@ const Kiosk = styled(List)`
   top: 0;
   right: 0;
   bottom: 0;
-  width: 200px;
+  
 `;
 
 const Container = styled(List)`
@@ -207,13 +220,27 @@ const ITEMS = [
   {
     id: uuid(),
     content: <NavFive />
+  },
+  {
+    id: uuid(),
+    content: <StraightLine />
+  },
+  {
+    id: uuid(),
+    content: <VerticalLine />
   }
+
+  
+  
 ];
 
 class App extends Component {
   state = {
     [uuid()]: [],
-    filterList : []
+    filterList : [],
+    x: 0,
+    y: 0,
+    isResize: false
   };
   static defaultProps = {
     className: "layout",
@@ -223,6 +250,16 @@ class App extends Component {
     cols: 12,
     
   };
+
+  handleMouseClick = (event) => {
+    console.log(event.clientX);
+    console.log(event.clientY);
+    this.setState({
+      x: event.pageX,
+      y: event.pageY
+    });
+  }
+
   onDragEnd = result => {
     const { source, destination, reason } = result;
 
@@ -288,6 +325,14 @@ class App extends Component {
     console.log("onLayoutChangeonLayoutChangeonLayoutChange", layout);
     this.props.onLayoutChange(layout);
     
+  }
+
+  showResizable = (item) => {
+    this.setState({isResize: true})
+  }
+
+  hideResizable = (item) => {
+    this.setState({isResize: false})
   }
   
   handleRemove = (item) => {
@@ -403,19 +448,51 @@ class App extends Component {
                 <Container
                   ref={provided.innerRef}
                   isDraggingOver={snapshot.isDraggingOver}
-                  
+                  onClick={this.handleMouseClick}
                 >
+                  
+                          
                   <ReactGridLayout
                     key={"gridlayout"}
-                    isResizable={true}
+                    isResizable={this.state.isResize}
                     style={{ overflow: "auto" }}
                     onLayoutChange={this.onLayoutChange.bind(this)}
                     // preventCollision
                     {...this.props}
                   >
-                    
+                    {/* {this.state[list].length ? (
+                      this.state[list].map((item, index) => (
+                        console.log(item.content.type.name),
+                        console.log(item.content.type.name === 'StraightLine'? 1 : 2)
+
+                      )))}  */}
                     {this.state[list].length ? (
                       this.state[list].map((item, index) => (
+
+                        item.content.type.name == 'StraightLine'?
+                        <ItemLineDropped
+                          key={"item" + index}
+                          className='drawLines'
+                          onMouseOver={() => this.showResizable(item)}
+                          onMouseOut={() => this.hideResizable(item)}
+                          onDoubleClick={() => this.handleRemove(item)}
+                          //btn_class = {this.state.isResize ? true : false}
+
+                        >
+                            {console.log(item)}
+                            {item.content} 
+                          </ItemLineDropped>
+                          : item.content.type.name == 'VerticalLine'?
+                          <ItemLineDropped
+                            key={"item" + index}
+                            className='drawLines'
+                            onMouseMove={() => this.showResizable(item)}
+                            onMouseOut={() => this.hideResizable(item)}
+                            onDoubleClick={() => this.handleRemove(item)}
+                          >
+                              {console.log(item)}
+                              {item.content} 
+                            </ItemLineDropped> :
                         <ItemDropped
                           key={"item" + index}
                           data-grid={{
@@ -424,8 +501,14 @@ class App extends Component {
                             w: item.w,
                             h: item.h
                           }}
+
+                          onMouseMove={() => this.showResizable(item)}
+                          onMouseOut={() => this.hideResizable(item)}
+                          
                           
                         >
+                          
+                          {console.log(item)}
                           {item.content}
                           <ItemBtn>
                           <Button className='removeBtn' key={'remove'} onClick={() => this.handleRemove(item)}>
@@ -435,14 +518,20 @@ class App extends Component {
                           </ItemBtn>
                           {/* <LineTo from={index} to={index} /> */}
                           {/* <Line x0={120} y0={20} x1={item.w} y1={item.h} /> */}
+                          {/* <Line x0={this.state.x} y0={50} x1={this.state.y} y1={20} /> */}
                         </ItemDropped>
+                        
                         
                       ))
                     ) : (
                       <Notice>Drop items here</Notice>
                     )}
+                    
                   </ReactGridLayout>
                   {provided.placeholder}
+                  
+                  {/* <svg><line x1={this.state.x} y1="0" x2={this.state.y} y2="0" stroke="red"/></svg> */}
+                  
                 </Container>
               )}
             </Droppable>

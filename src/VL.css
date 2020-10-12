@@ -1,0 +1,5 @@
+.verticalLine {
+    height: 100%;
+    position: absolute;
+    border-left: 2px solid black;
+  }
