@@ -11,8 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
+/* 
 .react-grid-item  {
   height:100px !important;
   
+} */
+
+.react-grid-layout {
+  /* height: 150px !important; */
+  /* padding: 50px 0; */
+  background-color: #ddd;
+  width:90%;
 }

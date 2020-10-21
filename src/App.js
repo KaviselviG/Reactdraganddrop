@@ -202,6 +202,7 @@ const ITEMS = [
     id: uuid(),
     content: <NavOne />
   },
+  
   // {
   //   id: uuid(),
   //   content: "Copy"
@@ -246,11 +247,13 @@ class App extends Component {
   static defaultProps = {
     className: "layout",
     // items: 20,
-    rowHeight: 130,
+    rowHeight: 150,
     onLayoutChange: function() {},
     cols: 12,
     
   };
+
+  
 
   handleMouseClick = (event) => {
     console.log(event.clientX);
@@ -488,6 +491,10 @@ class App extends Component {
   // But in this example everything is just done in one place for simplicity
   render() {
     // console.log(this.state.itemHt, "itemHtitemHtitemHt");
+    let stateFirstArr = [];
+    let objKeys = Object.keys(this.state)[0];
+    stateFirstArr.push(objKeys);
+    
     return (
       
       <DragDropContext onDragEnd={this.onDragEnd}>
@@ -550,7 +557,7 @@ class App extends Component {
             <ButtonText>Clear All</ButtonText>
           </Button> */}
      
-          {Object.keys(this.state).map((list, i) => (
+          {stateFirstArr.map((list, i) => (
             <Droppable key={list} droppableId={list}>
               {(provided, snapshot) => (
                 <Container
@@ -558,9 +565,7 @@ class App extends Component {
                   isDraggingOver={snapshot.isDraggingOver}
                  onClick={this.handleMouseClick}
                 >
-                  
-                          
-                  <ReactGridLayout
+                   <ReactGridLayout
                     key={"gridlayout"}
                     isResizable={this.state.isResize}
                     style={{ overflow: "auto" }}
@@ -571,7 +576,7 @@ class App extends Component {
                   
                     {this.state[list].length ? (
                       this.state[list].map((item, index) => (
-
+                        
                         // item.content.type.name == 'StraightLine'?
                         // <ItemLineDropped
                         //   key={"item" + index}
@@ -608,6 +613,7 @@ class App extends Component {
                           
                           
                         >
+                          {/* {console.log(item)} */}
                           {item.content}
                           <ItemBtn>
                           <Button className='removeBtn' key={'remove'} onClick={() => this.handleRemove(item)}>
