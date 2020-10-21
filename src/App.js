@@ -19,8 +19,8 @@ import NavTwo from './NavTwo';
 import NavThree from './NavThree';
 import NavFour from './NavFour';
 import NavFive from './NavFive';
-import StraightLine from './StraightLine';
-import VerticalLine from './VerticalLine';
+// import StraightLine from './StraightLine';
+// import VerticalLine from './VerticalLine';
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -69,7 +69,8 @@ const move = (source, destination, droppableSource, droppableDestination) => {
 };
 
 const Content = styled.div`
-  margin-right: 200px;
+  margin-right: 100px;
+  padding:25px;
 `;
 
 const Item = styled.div`
@@ -155,7 +156,7 @@ const Kiosk = styled(List)`
   top: 0;
   right: 0;
   bottom: 0;
-  
+  margin-top:25px;
 `;
 
 const Container = styled(List)`
@@ -221,14 +222,14 @@ const ITEMS = [
     id: uuid(),
     content: <NavFive />
   },
-  {
-    id: uuid(),
-    content: <StraightLine />
-  },
-  {
-    id: uuid(),
-    content: <VerticalLine />
-  }
+  // {
+  //   id: uuid(),
+  //   content: <StraightLine />
+  // },
+  // {
+  //   id: uuid(),
+  //   content: <VerticalLine />
+  // }
 
   
   
@@ -314,11 +315,116 @@ class App extends Component {
   };
 
   saveComponent = e => {
-    console.log(this.state);
+    //console.log(this.state);
+    // let comp = this.state;
+    const idconst = this.state;
+    //console.log(idconst);
+    const idKey = Object.keys(idconst)[0];
+    let completeArrList = idconst[idKey];
+    
+    completeArrList.map(compType => {
+      if(compType.content.type.name == "NavOne")
+      {
+        this.postCompOne(compType);
+      } else if(compType.content.type.name == "NavTwo")
+      {
+        this.postCompTwo(compType);
+      } else if(compType.content.type.name == "NavThree")
+      {
+        this.postCompThree(compType);
+      } else if(compType.content.type.name == "NavFour")
+      {
+        this.postCompFour(compType);
+      } else if(compType.content.type.name == "NavFive")
+      {
+        this.postCompFive(compType);
+      }
+    })
   }
 
+  postCompOne = e => {
+    console.log(e);
+    let createCompArr = [];
+    createCompArr.push(e)
+    createCompArr.map(val => {
+      fetch('http://localhost:3002/?arrval=val1')
+    .then(res => {
+      console.log(res);
+      console.log(val);
+    
+    }).catch(err => {
+      console.log(err);
+    })
+    })
+  }
+
+  postCompTwo = e => {
+    console.log(e);
+    let createCompArr = [];
+    createCompArr.push(e)
+    createCompArr.map(val => {
+      fetch('http://localhost:3002/?arrval=val2')
+    .then(res => {
+      console.log(res);
+      console.log(val);
+    
+    }).catch(err => {
+      console.log(err);
+    })
+    })
+  }
+
+  postCompThree = e => {
+    console.log(e);
+    let createCompArr = [];
+    createCompArr.push(e)
+    createCompArr.map(val => {
+      fetch('http://localhost:3002/?arrval=val3')
+    .then(res => {
+      console.log(res);
+      console.log(val);
+    
+    }).catch(err => {
+      console.log(err);
+    })
+    })
+  }
+
+  postCompFour = e => {
+    console.log(e);
+    let createCompArr = [];
+    createCompArr.push(e)
+    createCompArr.map(val => {
+      fetch('http://localhost:3002/?arrval=val4')
+    .then(res => {
+      console.log(res);
+      console.log(val);
+    
+    }).catch(err => {
+      console.log(err);
+    })
+    })
+  }
+
+  postCompFive = e => {
+    console.log(e);
+    let createCompArr = [];
+    createCompArr.push(e)
+    createCompArr.map(val => {
+      fetch('http://localhost:3002/?arrval=val5')
+    .then(res => {
+      console.log(res);
+      console.log(val);
+    
+    }).catch(err => {
+      console.log(err);
+    })
+    })
+  }
+  
   clearallComponent = e => {
     this.setState([]);
+    //this.setState = {};
   }
 
   onLayoutChange(layout) {
@@ -343,7 +449,6 @@ class App extends Component {
     const idKey = Object.keys(idconst)[0];
     let completeArrList = idconst[idKey];
     this.setState({filterList:item});
-    //console.log(this.state.filterList.length);
     // get index of object with id
     let componentArrList = idconst.filterList;
     console.log(componentArrList);
@@ -356,6 +461,8 @@ class App extends Component {
     // remove object
     console.log(removeIndex);
     completeArrList.splice(removeIndex, 1);
+    console.log(this.state);
+    
     
     //let componentArrList = idconst[idKey];
     //console.log(componentArrList);
@@ -380,7 +487,7 @@ class App extends Component {
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
-    console.log(this.state.itemHt, "itemHtitemHtitemHt");
+    // console.log(this.state.itemHt, "itemHtitemHtitemHt");
     return (
       
       <DragDropContext onDragEnd={this.onDragEnd}>
@@ -393,6 +500,7 @@ class App extends Component {
               isDraggingOver={snapshot.isDraggingOver}
               
             >
+              <span><b>Drag the components</b></span>
               {ITEMS.map((item, index) => (
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided, snapshot) => (
@@ -437,10 +545,10 @@ class App extends Component {
             <ButtonText>Save</ButtonText>
           </Button>
 
-          <Button style={{display:'inline'}} onClick={this.clearallComponent}>
+          {/* <Button style={{display:'inline'}} onClick={this.clearallComponent}>
             
             <ButtonText>Clear All</ButtonText>
-          </Button>
+          </Button> */}
      
           {Object.keys(this.state).map((list, i) => (
             <Droppable key={list} droppableId={list}>
@@ -448,7 +556,7 @@ class App extends Component {
                 <Container
                   ref={provided.innerRef}
                   isDraggingOver={snapshot.isDraggingOver}
-                  onClick={this.handleMouseClick}
+                 onClick={this.handleMouseClick}
                 >
                   
                           
@@ -457,42 +565,35 @@ class App extends Component {
                     isResizable={this.state.isResize}
                     style={{ overflow: "auto" }}
                     onLayoutChange={this.onLayoutChange.bind(this)}
-                    // preventCollision
+                    preventCollision
                     {...this.props}
                   >
-                    {/* {this.state[list].length ? (
-                      this.state[list].map((item, index) => (
-                        console.log(item.content.type.name),
-                        console.log(item.content.type.name === 'StraightLine'? 1 : 2)
-
-                      )))}  */}
+                  
                     {this.state[list].length ? (
                       this.state[list].map((item, index) => (
 
-                        item.content.type.name == 'StraightLine'?
-                        <ItemLineDropped
-                          key={"item" + index}
-                          className='drawLines'
-                          onMouseOver={() => this.showResizable(item)}
-                          onMouseOut={() => this.hideResizable(item)}
-                          onDoubleClick={() => this.handleRemove(item)}
-                          //btn_class = {this.state.isResize ? true : false}
-
-                        >
-                            {console.log(item)}
-                            {item.content} 
-                          </ItemLineDropped>
-                          : item.content.type.name == 'VerticalLine'?
-                          <ItemLineDropped
-                            key={"item" + index}
-                            className='drawLines'
-                            onMouseMove={() => this.showResizable(item)}
-                            onMouseOut={() => this.hideResizable(item)}
-                            onDoubleClick={() => this.handleRemove(item)}
-                          >
-                              {console.log(item)}
-                              {item.content} 
-                            </ItemLineDropped> :
+                        // item.content.type.name == 'StraightLine'?
+                        // <ItemLineDropped
+                        //   key={"item" + index}
+                        //   className='drawLines'
+                        //   onMouseOver={() => this.showResizable(item)}
+                        //   onMouseOut={() => this.hideResizable(item)}
+                        //   onDoubleClick={() => this.handleRemove(item)}
+                          
+                        // >
+                        //     {console.log(item)}
+                        //     {item.content} 
+                        //   </ItemLineDropped>
+                        //   : item.content.type.name == 'VerticalLine'?
+                        //   <ItemLineDropped
+                        //     key={"item" + index}
+                        //     className='drawLines'
+                        //     onMouseMove={() => this.showResizable(item)}
+                        //     onMouseOut={() => this.hideResizable(item)}
+                        //     onDoubleClick={() => this.handleRemove(item)}
+                        //   >
+                        //       {item.content} 
+                        //     </ItemLineDropped> :
                         <ItemDropped
                           key={"item" + index}
                           data-grid={{
@@ -507,8 +608,6 @@ class App extends Component {
                           
                           
                         >
-                          
-                          {console.log(item)}
                           {item.content}
                           <ItemBtn>
                           <Button className='removeBtn' key={'remove'} onClick={() => this.handleRemove(item)}>
@@ -530,7 +629,7 @@ class App extends Component {
                   </ReactGridLayout>
                   {provided.placeholder}
                   
-                  {/* <svg><line x1={this.state.x} y1="0" x2={this.state.y} y2="0" stroke="red"/></svg> */}
+                
                   
                 </Container>
               )}
