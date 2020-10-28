@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import _ from "lodash";
 //import uuid from "uuid/v4";
 import {v4 as uuid} from "uuid";
 import styled from "styled-components";
@@ -41,16 +42,21 @@ let filterLists;
  */
 const copy = (source, destination, droppableSource, droppableDestination) => {
   const sourceClone = Array.from(source);
+  
   sourceClone.forEach((item, index) => {
-    item.w = 3;
+    //  console.log(item);
+    
+    item.w = 1;
     item.h = 1;
-    item.x = 1;
-    item.y = 1;
+    item.x = index * 1;
+    item.y = 0;
     item.i = index;
   });
   const destClone = Array.from(destination);
   const item = sourceClone[droppableSource.index];
   destClone.splice(droppableDestination.index, 0, { ...item, id: uuid() });
+  
+  // console.log(source);
   return destClone;
 };
 
@@ -67,6 +73,8 @@ const move = (source, destination, droppableSource, droppableDestination) => {
 
   return result;
 };
+
+
 
 const Content = styled.div`
   margin-right: 100px;
@@ -237,21 +245,57 @@ const ITEMS = [
 ];
 
 class App extends Component {
-  state = {
+  constructor(props) {
+    super(props);
+
+    const layout = this.generateLayout();
+    
+  this.state = {
     [uuid()]: [],
     filterList : [],
     x: 0,
     y: 0,
-    isResize: false
+    isResize: false,
+    layout
   };
+}
+
   static defaultProps = {
     className: "layout",
-    // items: 20,
-    rowHeight: 150,
+    items: 20,
+    rowHeight: 100,
     onLayoutChange: function() {},
     cols: 12,
+    // initialLayout: generateLayout()
     
   };
+
+  
+  _onMouseMove = (e) => {
+    // console.log(e.screenX);
+    this.setState({ x: e.screenX, y: e.screenY });
+  }
+
+  generateLayout = () => {
+    const p = this.props;
+    console.log(p);
+    return _.map(new Array(p.items), function(item, i) {
+      const w = _.random(1, 2);
+      const h = _.random(1, 3);
+      return {
+        x: (i * 2) % 12,
+        y: Math.floor(i / 6),
+        w: w,
+        h: h,
+        i: i.toString()
+      };
+    });
+  }
+
+  onLayoutChange(layout) {
+    this.props.onLayoutChange(layout);
+  }
+ 
 
   
 
@@ -266,7 +310,7 @@ class App extends Component {
 
   onDragEnd = result => {
     const { source, destination, reason } = result;
-
+    console.log(reason);
     // dropped outside the list
     if (!destination) {
       return;
@@ -301,12 +345,12 @@ class App extends Component {
         break;
       default:
         this.setState(
-          move(
-            this.state[source.droppableId],
-            this.state[destination.droppableId],
-            source,
-            destination
-          )
+          ////move(
+            // this.state[source.droppableId],
+            // this.state[destination.droppableId],
+            // source,
+            // destination
+          //)
         );
         break;
     }
@@ -426,6 +470,13 @@ class App extends Component {
   }
   
   clearallComponent = e => {
+    // console.log(this.state);
+    const idconst = this.state;
+    //console.log(idconst);
+    const idKey = Object.keys(idconst)[0];
+    let completeArrList = idconst[idKey];
+    console.log(completeArrList.splice(0, completeArrList.length));
+    // console.log(completeArrList.pop());
     this.setState([]);
     //this.setState = {};
   }
@@ -494,7 +545,7 @@ class App extends Component {
     let stateFirstArr = [];
     let objKeys = Object.keys(this.state)[0];
     stateFirstArr.push(objKeys);
-    
+    // console.log(this.state);
     return (
       
       <DragDropContext onDragEnd={this.onDragEnd}>
@@ -552,10 +603,10 @@ class App extends Component {
             <ButtonText>Save</ButtonText>
           </Button>
 
-          {/* <Button style={{display:'inline'}} onClick={this.clearallComponent}>
+          <Button style={{display:'inline'}} onClick={this.clearallComponent}>
             
             <ButtonText>Clear All</ButtonText>
-          </Button> */}
+          </Button>
      
           {stateFirstArr.map((list, i) => (
             <Droppable key={list} droppableId={list}>
@@ -564,13 +615,22 @@ class App extends Component {
                   ref={provided.innerRef}
                   isDraggingOver={snapshot.isDraggingOver}
                  onClick={this.handleMouseClick}
+                 onMouseMove={this._onMouseMove.bind(this)}
                 >
                    <ReactGridLayout
                     key={"gridlayout"}
+                    isDraggable={true}
+                    useCSSTransforms={true}
                     isResizable={this.state.isResize}
                     style={{ overflow: "auto" }}
-                    onLayoutChange={this.onLayoutChange.bind(this)}
+                    // onLayoutChange={this.onLayoutChange.bind(this)}
+                    
+                    layout={this.state.layout}
+                    onLayoutChange={this.onLayoutChange}
                     preventCollision
+                    cols={12}
+                    // rowHeight={150}
+                    width={1200}
                     {...this.props}
                   >
                   
@@ -602,7 +662,7 @@ class App extends Component {
                         <ItemDropped
                           key={"item" + index}
                           data-grid={{
-                            x: item.x,
+                            x: item.x*index,
                             y: item.y,
                             w: item.w,
                             h: item.h
@@ -648,6 +708,8 @@ class App extends Component {
     );
   }
 }
+
+
 
 //ReactDOM.render(<App />)
 

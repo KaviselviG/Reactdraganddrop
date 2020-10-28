@@ -21,5 +21,21 @@ code {
   /* height: 150px !important; */
   /* padding: 50px 0; */
   background-color: #ddd;
-  width:90%;
+  width:100%;
+  height:100vh !important;
+}
+
+.DashPreview-PreviewList {
+    margin-right: 0;
+    padding: 25px;
+    width: calc(100% - 180px);
+    box-sizing: border-box;
+}
+
+.bXOiRA {
+  padding-bottom: 10px !important;
+}
+
+.gQPzgW {
+  overflow: auto;
 }
